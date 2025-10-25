@@ -1,95 +1,110 @@
-# Web Scraper cho Thông báo của Quận Dương Phố, Thượng Hải
+Web Scraper for Shanghai Yangpu District Announcements
+Introduction
+This is a Python script designed to automatically scrape data from the planning proposal announcement website of Yangpu District, Shanghai. The script extracts information about elevator installation projects, including the district, address, and announcement date, then saves the results in an organized file.
 
-## Giới thiệu
+Main Features
+Data Crawling: Automatically accesses the specified URL and downloads the website's HTML content.
 
-Đây là một script Python được thiết kế để tự động thu thập dữ liệu từ trang web công bố các phương án quy hoạch của Quận Dương Phố, Thượng Hải. Script sẽ trích xuất thông tin về các dự án lắp đặt thang máy, bao gồm quận, địa chỉ và ngày công bố, sau đó lưu kết quả vào file một cách có tổ chức.
+Raw Data Storage: Saves all original crawled titles to crawled_titles.txt for reference and verification.
 
-## Chức năng chính
+Information Extraction: Parses each title to extract 3 key pieces of information:
 
--   **Thu thập dữ liệu (Crawling):** Tự động truy cập vào URL được chỉ định và tải về nội dung HTML của trang web.
--   **Lưu trữ dữ liệu thô:** Lưu lại tất cả các tiêu đề gốc đã thu thập được vào file `crawled_titles.txt` để tham chiếu và kiểm tra.
--   **Trích xuất thông tin:** Phân tích từng tiêu đề để bóc tách ra 3 trường thông tin quan trọng:
-    -   `区` (Quận)
-    -   `地址` (Địa chỉ)
-    -   `公告日期` (Ngày công bố)
--   **Ghi dữ liệu an toàn vào Excel:**
-    -   Thêm dữ liệu đã được trích xuất vào sheet có tên `shanghai` trong file `模版.xlsx`.
-    -   **Đặc biệt:** Dữ liệu được ghi bắt đầu từ **cột B**, giữ nguyên cột A trống.
-    -   **An toàn:** Quá trình ghi file được thiết kế để **không làm ảnh hưởng, thay đổi hay xóa** bất kỳ sheet nào khác có trong file Excel.
+区 (District)
 
-## Cài đặt và Hướng dẫn sử dụng
+地址 (Address)
 
-### Yêu cầu
+公告日期 (Announcement Date)
 
--   Python 3.8+
--   `uv` (Một trình quản lý gói và môi trường ảo cực nhanh cho Python)
+Safe Excel Writing:
 
-### Các bước cài đặt
+Appends extracted data to a sheet named shanghai in the 模版.xlsx file.
 
-1.  **Cài đặt `uv`:**
-    Nếu bạn chưa có `uv`, hãy cài đặt nó.
-    ```bash
-    # macOS / Linux
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+Specifically: Data writing begins from column B, leaving column A empty.
 
-    # Windows (Powershell)
-    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
+Safe: The writing process is designed to not affect, change, or delete any other existing sheets in the Excel file.
 
-2.  **Tạo môi trường ảo:**
-    Mở terminal trong thư mục dự án và chạy lệnh sau để tạo một môi trường ảo có tên là `.venv`.
-    ```bash
-    uv venv
-    ```
+Installation and Usage Guide
+Requirements
+Python 3.8+
 
-3.  **Kích hoạt môi trường ảo:**
-    ```bash
-    # macOS / Linux
-    source .venv/bin/activate
+uv (An extremely fast Python package manager and virtual environment)
 
-    # Windows (Command Prompt)
-    .venv\Scripts\activate
-    ```
-    Sau khi kích hoạt, bạn sẽ thấy `(.venv)` ở đầu dòng lệnh.
+Installation Steps
+Install uv: If you don't have uv, install it.
 
-4.  **Cài đặt các thư viện phụ thuộc:**
-    Sử dụng `uv` để cài đặt các thư viện cần thiết một cách nhanh chóng.
-    ```bash
-    uv pip install requests beautifulsoup4 pandas openpyxl
-    ```
+Bash
 
-5.  **Chuẩn bị file Excel mẫu:**
-    -   Đây là một bước **bắt buộc**. Hãy tạo một file Excel trong cùng thư mục và đặt tên chính xác là `模版.xlsx`.
-    -   Mở file lên và tạo các sheet bạn cần. Ví dụ: tạo một sheet tên `shenzhen` với định dạng bạn muốn và một sheet tên `shanghai` (có thể để trống hoặc có sẵn tiêu đề). Script sẽ tìm đến sheet `shanghai` để làm việc.
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-6.  **Chạy script:**
-    Sau khi đã hoàn tất các bước trên, chạy script bằng lệnh sau:
-    ```bash
-    python main.py
-    ```
-    Script sẽ bắt đầu kết nối, thu thập dữ liệu và cập nhật file `模版.xlsx` của bạn.
+# Windows (Powershell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+Create a virtual environment: Open a terminal in the project directory and run the following command to create a virtual environment named .venv.
 
-## Cách hoạt động
+Bash
 
-Script hoạt động theo một quy trình gồm 2 phần chính:
+uv venv
+Activate the virtual environment:
 
-1.  **Phần 1: Thu thập và Xử lý dữ liệu**
-    -   Script sử dụng thư viện `requests` để gửi một yêu cầu HTTP GET đến URL, giả mạo một `User-Agent` của trình duyệt để tránh bị chặn.
-    -   `BeautifulSoup4` được dùng để phân tích cú pháp HTML trả về.
-    -   Nó tìm đến tất cả các thẻ `<li>` dựa trên một bộ chọn CSS (`selector`) được định nghĩa sẵn.
-    -   Với mỗi mục tìm thấy, nó trích xuất tiêu đề đầy đủ và ngày công bố.
-    -   Logic phân tích chuỗi đơn giản được áp dụng để tách Quận và Địa chỉ từ tiêu đề, dựa trên việc tìm ký tự `区` và loại bỏ một chuỗi hậu tố chung.
+Bash
 
-2.  **Phần 2: Ghi file an toàn bằng `openpyxl`**
-    -   Đây là phần quan trọng nhất để đảm bảo tính toàn vẹn của file Excel.
-    -   Script sử dụng `openpyxl` để tải toàn bộ file `模版.xlsx` vào bộ nhớ **một cách nguyên bản**.
-    -   Nó chỉ thao tác trên sheet `shanghai`. Nếu sheet chưa tồn tại, nó sẽ được tạo mới.
-    -   Script xác định hàng trống cuối cùng trong sheet và bắt đầu ghi dữ liệu mới từ đó, **ghi vào từng ô cụ thể (cell)** để đảm bảo dữ liệu bắt đầu chính xác từ cột B.
-    -   Cuối cùng, nó lưu lại toàn bộ file. Vì script không hề đọc hay chỉnh sửa các sheet khác, chúng được giữ nguyên 100%.
+# macOS / Linux
+source .venv/bin/activate
 
-## Hạn chế hiện tại
+# Windows (Command Prompt)
+.venv\Scripts\activate
+After activation, you will see (.venv) at the beginning of your command line.
 
--   **Cấu hình được hard-coded:** Các thông tin quan trọng như URL, tên file, tên sheet, và đặc biệt là chuỗi hậu tố (`common_suffix`) để loại bỏ khỏi tiêu đề đều đang được định nghĩa trực tiếp trong code. Nếu chúng thay đổi, bạn phải sửa lại code.
--   **Chỉ thu thập trang đầu tiên:** Script hiện tại không xử lý phân trang (pagination). Nó chỉ lấy dữ liệu từ trang đầu tiên của danh sách.
--   **Logic phân tích tiêu đề còn đơn giản:** Logic phân tích tiêu đề để lấy `Quận` và `Địa chỉ` khá đơn giản (dựa vào ký tự `区` và một chuỗi cố định). Nó có thể thất bại nếu định dạng tiêu đề thay đổi hoặc có các trường hợp ngoại lệ.
--   **Phụ thuộc vào cấu trúc HTML:** Bộ chọn CSS (`ul.uli16...`) rất cụ thể cho cấu trúc hiện tại của trang web. Nếu trang web thay đổi layout (dù là một thay đổi nhỏ về class), script sẽ không tìm thấy dữ liệu và ngừng hoạt động.
+Install dependencies: Use uv to install the necessary libraries quickly.
+
+Bash
+
+uv pip install requests beautifulsoup4 pandas openpyxl
+Prepare the template Excel file:
+
+This is a mandatory step. Create an Excel file in the same directory and name it exactly 模版.xlsx.
+
+Open the file and create the sheets you need. For example: create a sheet named shenzhen with your desired format and another sheet named shanghai (it can be empty or have existing headers). The script will find the shanghai sheet to work on.
+
+Run the script: After completing the steps above, run the script with the following command:
+
+Bash
+
+python main.py
+The script will start connecting, scraping data, and updating your 模版.xlsx file.
+
+How it Works
+The script operates in a 2-part process:
+
+Part 1: Data Collection and Processing
+
+The script uses the requests library to send an HTTP GET request to the URL, spoofing a browser User-Agent to avoid being blocked.
+
+BeautifulSoup4 is used to parse the returned HTML.
+
+It finds all <li> tags based on a predefined CSS selector.
+
+For each item found, it extracts the full title and announcement date.
+
+Simple string parsing logic is applied to split the District and Address from the title, based on finding the 区 character and removing a common suffix string.
+
+Part 2: Safe File Writing with openpyxl
+
+This is the most critical part to ensure the integrity of the Excel file.
+
+The script uses openpyxl to load the entire 模版.xlsx file into memory in its original state.
+
+It only operates on the shanghai sheet. If the sheet doesn't exist, it will be created.
+
+The script identifies the last empty row in the sheet and starts writing new data from there, writing to specific cells to ensure data starts correctly from column B.
+
+Finally, it saves the entire file. Because the script never reads or edits other sheets, they are preserved 100%.
+
+Current Limitations
+Hard-coded configuration: Important information such as the URL, filenames, sheet name, and especially the suffix string (common_suffix) to be removed from the title are all defined directly in the code. If they change, you must edit the code.
+
+Only scrapes the first page: The script does not currently handle pagination. It only retrieves data from the first page of the list.
+
+Simple title parsing logic: The logic for parsing the title to get the District and Address is quite simple (based on the 区 character and a fixed string). It may fail if the title format changes or if there are exceptions.
+
+Dependent on HTML structure: The CSS selector (ul.uli16...) is very specific to the current structure of the website. If the website changes its layout (even a small class change), the script will fail to find data and stop working.
